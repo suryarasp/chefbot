@@ -21,7 +21,7 @@ class SerialDataGateway(object):
 	Helper class for receiving lines from a serial port
 	'''
 
-	def __init__(self, port="/dev/ttyUSB1", baudrate=115200, lineHandler = _OnLineReceived):
+	def __init__(self, port="/dev/ttyUSB0", baudrate=115200, lineHandler = _OnLineReceived):
 		'''
 		Initializes the receiver class. 
 		port: The serial port to listen to.
@@ -49,7 +49,7 @@ class SerialDataGateway(object):
 	def _Listen(self):
 		stringIO = StringIO()
 		while self._KeepRunning:
-			data = self._Serial.read()
+			data = self._Serial.read().decode('UTF-8')
 			if data == '\r':
 				pass
 			if data == '\n':
@@ -58,7 +58,7 @@ class SerialDataGateway(object):
 				stringIO = StringIO()
 				
 			else:
-				stringIO.write(data.decode(encoding='UTF-8') )
+				stringIO.write(data )
 				#BytesIO.write(data)
 
 	def Write(self, data):
@@ -66,9 +66,9 @@ class SerialDataGateway(object):
 		rospy.loginfo(info)
 		self._Serial.write(data)
 
-	if __name__ == '__main__':
-		dataReceiver = SerialDataGateway("/dev/ttyUSB1",  115200)
-		dataReceiver.Start()
+if __name__ == '__main__':
+	dataReceiver = SerialDataGateway("/dev/ttyUSB0",  115200)
+	dataReceiver.Start()
 
-		raw_input("Hit <Enter> to end.")
-		dataReceiver.Stop()
+	input("Hit <Enter> to end.")
+	dataReceiver.Stop()

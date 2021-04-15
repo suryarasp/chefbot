@@ -30,6 +30,7 @@ class Launchpad_Class(object):
     def __init__(self):
         
         print("Initializing Launchpad Class")
+        
 
         #######################################################################################################################
         #Sensor variables
@@ -55,7 +56,7 @@ class Launchpad_Class(object):
         self.robot_heading = 0
 #######################################################################################################################
 		#Get serial port and baud rate of Tiva C Launchpad
-        port = rospy.get_param("~port", "/dev/ttyUSB1")
+        port = rospy.get_param("~port", "/dev/ttyUSB0")
         baudRate = int(rospy.get_param("~baudRate", 115200))
 
 #######################################################################################################################
@@ -63,6 +64,7 @@ class Launchpad_Class(object):
         #Initializing SerialDataGateway with port, baudrate and callback function to handle serial data
         self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
         rospy.loginfo("Started serial communication")
+        
 
 
         #######################################################################################################################
@@ -131,6 +133,7 @@ class Launchpad_Class(object):
     def _Update_Left_Speed(self, left_speed):
 
 	    self._left_wheel_speed_ = left_speed.data
+	    rospy.loginfo("left_speed.data")
 
 	    rospy.loginfo(left_speed.data)
 
@@ -148,7 +151,7 @@ class Launchpad_Class(object):
 	    rospy.loginfo(right_speed.data)
 
 	    speed_message = 's %d %d\r' %(int(self._left_wheel_speed_),int(self._right_wheel_speed_))
-	    print ("speed_message")
+	    print ("entered")
 	    
 
 
@@ -161,21 +164,27 @@ class Launchpad_Class(object):
     def _HandleReceivedLine(self,  line):
 	    self._Counter = self._Counter + 1
 	    self._SerialPublisher.publish(String(str(self._Counter) + ", in:  " + line))
-
-
+	    
+	    rospy.loginfo("entered  in to handlereceived line")
+	    rospy.loginfo(line)
 	    if(len(line) > 0):
+	       
 
 		    lineParts = line.split('\t')
+		    #rospy.loginfo(line)
 		    try:
 			    if(lineParts[0] == 'e'):
-				    self._left_encoder_value = long(lineParts[1])
-				    self._right_encoder_value = long(lineParts[2])
+				    self._left_encoder_value = -1*int(lineParts[1])
+				    self._right_encoder_value = -1*int(lineParts[2])
 
 
     #######################################################################################################################
 
 				    self._Left_Encoder.publish(self._left_encoder_value)
 				    self._Right_Encoder.publish(self._right_encoder_value)
+				    rospy.loginfo("left encoder  ")
+				    rospy.loginfo(-1*int(lineParts[1]))
+
 
     #######################################################################################################################
 			    
