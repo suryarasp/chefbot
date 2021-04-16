@@ -194,7 +194,7 @@ class PidVelocity():
     #####################################################
     def wheelCallback(self, msg):
     ######################################################
-        enc = long(msg.data)
+        enc = int(msg.data)
 #	rospy.logwarn(enc)
         if (enc < self.encoder_low_wrap and self.prev_encoder > self.encoder_high_wrap) :
             self.wheel_mult = self.wheel_mult + 1
@@ -214,6 +214,7 @@ class PidVelocity():
     ######################################################
         self.target = msg.data
         self.ticks_since_target = 0
+        #rospy.loginfo("entered  in to target velocity ")
         # rospy.logdebug("-D- %s targetCallback " % (self.nodename))
     
     
