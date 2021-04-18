@@ -48,9 +48,9 @@ class PidVelocity():
         self.prev_encoder = 0
         
         ### get parameters #### 
-        self.Kp = rospy.get_param('~Kp',200)
-        self.Ki = rospy.get_param('~Ki',0.5)
-        self.Kd = rospy.get_param('~Kd',0.025)
+        self.Kp = rospy.get_param('~Kp',0.1)
+        self.Ki = rospy.get_param('~Ki',1.5)
+        self.Kd = rospy.get_param('~Kd',0.1)
         self.out_min = rospy.get_param('~out_min',-255)
         self.out_max = rospy.get_param('~out_max',255)
         self.rate = rospy.get_param('~rate',30)
@@ -137,6 +137,8 @@ class PidVelocity():
         else:
             # we received a new wheel value
             cur_vel = (self.wheel_latest - self.wheel_prev) / self.dt
+            if(cur_vel>1.8):####********************************************************
+                cur_vel=1.8##***************************************************************
             self.appendVel(cur_vel)
             self.calcRollingVel()
             rospy.logdebug("-D- %s **** wheel updated vel=%0.3f **** " % (self.nodename, self.vel))
@@ -165,19 +167,19 @@ class PidVelocity():
         self.prev_pid_time = rospy.Time.now()
         
         self.error = self.target - self.vel
-        self.integral = self.integral + (self.error * pid_dt)
+        self.integral = self.integral + (self.error )#self.integral = self.integral + (self.error * pid_dt)
         # rospy.loginfo("i = i + (e * dt):  %0.3f = %0.3f + (%0.3f * %0.3f)" % (self.integral, self.integral, self.error, pid_dt))
-        self.derivative = (self.error - self.previous_error) / pid_dt
+        self.derivative = (self.error - self.previous_error) #self.derivative = (self.error - self.previous_error) / pid_dt
         self.previous_error = self.error
     
         self.motor = (self.Kp * self.error) + (self.Ki * self.integral) + (self.Kd * self.derivative)
     
         if self.motor > self.out_max:
             self.motor = self.out_max
-            self.integral = self.integral - (self.error * pid_dt)
+            self.integral = self.integral - (self.error )#self.integral = self.integral - (self.error * pid_dt)
         if self.motor < self.out_min:
             self.motor = self.out_min
-            self.integral = self.integral - (self.error * pid_dt)
+            self.integral = self.integral - (self.error )#self.integral = self.integral - (self.error * pid_dt)
       
         if (self.target == 0):
             self.motor = 0

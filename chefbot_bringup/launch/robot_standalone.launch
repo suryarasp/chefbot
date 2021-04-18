@@ -31,9 +31,9 @@
       <remap from="wheel_vtarget" to="lwheel_vtarget"/>
       <remap from="wheel_vel" to="lwheel_vel"/>
     
-      <rosparam param="Kp">150/rosparam>
-      <rosparam param="Ki">10</rosparam>
-      <rosparam param="Kd">0.025</rosparam>
+      <rosparam param="Kp">0.1</rosparam>
+      <rosparam param="Ki">1.5</rosparam>
+      <rosparam param="Kd">0.1</rosparam>
       <rosparam param="out_min">-255</rosparam>
       <rosparam param="out_max">255</rosparam>
       <rosparam param="rate">30</rosparam>
@@ -47,9 +47,9 @@
       <remap from="motor_cmd" to="right_wheel_speed"/>
       <remap from="wheel_vtarget" to="rwheel_vtarget"/>
       <remap from="wheel_vel" to="rwheel_vel"/>
-      <rosparam param="Kp">400</rosparam>
-      <rosparam param="Ki">0.5</rosparam>
-      <rosparam param="Kd">0.025</rosparam>
+      <rosparam param="Kp">0.1</rosparam>
+      <rosparam param="Ki">1.5</rosparam>
+      <rosparam param="Kd">0.1</rosparam>
       <rosparam param="out_min">-255</rosparam>
       <rosparam param="out_max">255</rosparam>
       <rosparam param="rate">30</rosparam>
@@ -58,7 +58,7 @@
 
 
 
- </node>
+  </node>
 
 
   <node pkg="chefbot_bringup" type="twist_to_motors.py" name="twist_to_motors" output="screen"/>
