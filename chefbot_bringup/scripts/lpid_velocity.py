@@ -29,7 +29,7 @@ class PidVelocity():
     #####################################################
     def __init__(self):
     #####################################################
-        rospy.init_node("pid_velocity")
+        rospy.init_node("lpid_velocity")
         self.nodename = rospy.get_name()
         rospy.loginfo("%s started" % self.nodename)
         
@@ -48,16 +48,16 @@ class PidVelocity():
         self.prev_encoder = 0
         
         ### get parameters #### 
-        self.Kp = rospy.get_param('~Kp',10)
-        self.Ki = rospy.get_param('~Ki',10)
-        self.Kd = rospy.get_param('~Kd',0.001)
+        self.Kp = rospy.get_param('~Kp',200)
+        self.Ki = rospy.get_param('~Ki',0.5)
+        self.Kd = rospy.get_param('~Kd',0.025)
         self.out_min = rospy.get_param('~out_min',-255)
         self.out_max = rospy.get_param('~out_max',255)
         self.rate = rospy.get_param('~rate',30)
         self.rolling_pts = rospy.get_param('~rolling_pts',2)
         self.timeout_ticks = rospy.get_param('~timeout_ticks',4)
         self.ticks_per_meter = rospy.get_param('ticks_meter', 412)
-        self.vel_threshold = rospy.get_param('~vel_threshold', 0.001)
+        self.vel_threshold = rospy.get_param('~vel_threshold', 0.01)
         self.encoder_min = rospy.get_param('encoder_min', -2147483648)
         self.encoder_max = rospy.get_param('encoder_max', 2147483648)
         self.encoder_low_wrap = rospy.get_param('wheel_low_wrap', (self.encoder_max - self.encoder_min) * 0.3 + self.encoder_min )
@@ -68,10 +68,10 @@ class PidVelocity():
         rospy.logdebug("%s got Kp:%0.3f Ki:%0.3f Kd:%0.3f tpm:%0.3f" % (self.nodename, self.Kp, self.Ki, self.Kd, self.ticks_per_meter))
         
         #### subscribers/publishers 
-        rospy.Subscriber("wheel", Int64, self.wheelCallback) 
-        rospy.Subscriber("wheel_vtarget", Float32, self.targetCallback) 
-        self.pub_motor = rospy.Publisher('motor_cmd',Float32,queue_size=10) 
-        self.pub_vel = rospy.Publisher('wheel_vel', Float32,queue_size=10)
+        rospy.Subscriber("lwheel", Int64, self.wheelCallback) 
+        rospy.Subscriber("lwheel_vtarget", Float32, self.targetCallback) 
+        self.pub_motor = rospy.Publisher('left_wheel_speed',Float32,queue_size=10) 
+        self.pub_vel = rospy.Publisher('lwheel_vel', Float32,queue_size=10)
    
         
     #####################################################
@@ -115,7 +115,12 @@ class PidVelocity():
         
         if (self.wheel_latest == self.wheel_prev):
             # we haven't received an updated wheel lately
-            cur_vel = (1 / self.ticks_per_meter) / self.dt    # if we got a tick right now, this would be the velocity
+            #cur_vel = (1 / self.ticks_per_meter) / self.dt    # if we got a tick right now, this would be the velocity
+            cur_vel=self.vel
+            if self.dt <2:
+                cur_vel=self.vel
+            else:
+                cur_vel=0
             if abs(cur_vel) < self.vel_threshold: 
                 # if the velocity is < threshold, consider our velocity 0
                 rospy.logdebug("-D- %s below threshold cur_vel=%0.3f vel=0" % (self.nodename, cur_vel))
@@ -179,6 +184,8 @@ class PidVelocity():
     
         rospy.logdebug("vel:%0.2f tar:%0.2f err:%0.2f int:%0.2f der:%0.2f ## motor:%d " % 
                       (self.vel, self.target, self.error, self.integral, self.derivative, self.motor))
+        rospy.loginfo("vel:%0.2f tar:%0.2f err:%0.2f int:%0.2f der:%0.2f ## motor:%d " % 
+                      (self.vel, self.target, self.error, self.integral, self.derivative, self.motor))
     
     
 
@@ -198,7 +205,7 @@ class PidVelocity():
         self.wheel_latest = 1.0 * (enc + self.wheel_mult * (self.encoder_max - self.encoder_min)) / self.ticks_per_meter 
         self.prev_encoder = enc
         
-        rospy.loginfo("wheel latest %0.2f"%self.wheel_latest)
+        #rospy.loginfo("wheel latest %0.2f"%self.wheel_latest)
 #        rospy.logdebug("-D- %s wheelCallback msg.data= %0.3f wheel_latest = %0.3f mult=%0.3f" % (self.nodename, enc, self.wheel_latest, self.wheel_mult))
     
     ######################################################

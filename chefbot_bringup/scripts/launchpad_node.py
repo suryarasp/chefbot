@@ -189,6 +189,7 @@ class Launchpad_Class(object):
                     self._Right_Encoder.publish(self._right_encoder_value)
                     rospy.loginfo("left encoder  ")
                     rospy.loginfo(-1*int(lineParts[1]))
+                    
 
     #######################################################################################################################
 

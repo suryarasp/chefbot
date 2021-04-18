@@ -25,7 +25,7 @@
 
 
 
-  <node name="lpid_velocity" pkg="chefbot_bringup" type="pid_velocity.py" output="screen">
+  <!--node name="lpid_velocity" pkg="chefbot_bringup" type="pid_velocity.py" output="screen">
       <remap from="wheel" to="lwheel"/>
       <remap from="motor_cmd" to="left_wheel_speed"/>
       <remap from="wheel_vtarget" to="lwheel_vtarget"/>
@@ -40,7 +40,7 @@
       <rosparam param="timeout_ticks">4</rosparam>
       <rosparam param="rolling_pts">5</rosparam>
 
-  </node>
+  </node -->
 
   <node name="rpid_velocity" pkg="chefbot_bringup" type="pid_velocity.py" output="screen">
       <remap from="wheel" to="rwheel"/>
